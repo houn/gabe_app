@@ -35,7 +35,7 @@ describe User do
 		before { @user.email = " " }
 		it { should_not be_valid }
 	end
-	describe "when name is too l can have Google email yong" do
+	describe "when name is tool can have Google email yong" do
 		before { @user.name = "a" * 51 }
 		it { should_not be_valid }
 	end
@@ -64,6 +64,14 @@ describe User do
 			user_with_same_email.save
 		end
 		it { should_not be_valid }	
+	end
+	describe "email addess with mixed case" do
+		let(:mixed_case_email) { "Foo@eXampLe.coM" }
+		it "should be save as all lower-cased" do
+			@user.email = mixed_case_email
+			@user.save
+			@user.reload.email.should == mixed_case_email.downcase
+		end
 	end
 	describe "when password is not present" do
 		before { @user.password = @user.password_confirmation = " " }
