@@ -8,6 +8,9 @@ describe "AuthenticationPages" do
 
 		it { should have_selector('h1', text: 'Sign in') }
 		it { should have_selector('title', text: 'Sign in') }
+		it { should_not have_link('Profile') }
+		it { should_not have_link('Settings') }
+
 	end
 	
 	describe "signin" do
@@ -27,7 +30,7 @@ describe "AuthenticationPages" do
 
 		describe "with valid information" do
 			let(:user) { FactoryGirl.create(:user) }
-			before { valid_signin user }
+			before { sign_in user }
 			it { should have_selector('title', text: user.name) }
 			it { should have_link('Users', href: users_path) }
 			it { should have_link('Profile', href: user_path(user)) }
@@ -52,6 +55,13 @@ describe "AuthenticationPages" do
 					it "should render the desired protected page" do
 						page.should have_selector('title', text: 'Edit user')
 					end
+
+					describe "when signing in again" do
+						before { sign_in user }
+						it "should render the default profile page" do
+							page.should have_selector('title', text: user.name)
+						end
+					end
 				end
 			end
 			describe "in the Users controller" do
@@ -72,8 +82,7 @@ describe "AuthenticationPages" do
 		describe "as wrong user" do
 			let(:user) { FactoryGirl.create(:user) }
 			let(:wrong_user) { FactoryGirl.create(:user,email: "wrong@example.com") }
-			before { visit signin_path }
-			before { valid_signin user }
+			before { sign_in user }
 
 			describe "visiting Users#edit page" do
 				before { visit edit_user_path(wrong_user) }
@@ -90,8 +99,7 @@ describe "AuthenticationPages" do
 			let(:non_admin) { FactoryGirl.create(:user) }
 
 			before do
-				visit signin_path
-				valid_signin non_admin
+				sign_in non_admin
 			end 
 			describe "submitting a DELETE request to the Users#destroy action" do
 				before { delete user_path(user) }

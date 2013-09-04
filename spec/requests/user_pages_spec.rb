@@ -9,8 +9,7 @@ describe "User Pages" do
     let(:user) { FactoryGirl.create(:user) }
 
     before do
-      visit signin_path
-      valid_signin FactoryGirl.create(:user)
+      sign_in FactoryGirl.create(:user)
       visit users_path
     end
 
@@ -34,8 +33,7 @@ describe "User Pages" do
       describe "as an admin user" do
         let(:admin) { FactoryGirl.create(:admin) }
         before do
-          visit signin_path
-          valid_signin admin
+          sign_in admin
           visit users_path
         end
 
@@ -72,7 +70,7 @@ describe "User Pages" do
   			fill_in "Name", 		with: "Example User"
   			fill_in "Email", 		with: "user@example.com"
   			fill_in "Password", 	with: "foobar"
-  			fill_in "Confirmation", with: "foobar"
+  			fill_in "Confirm Password", with: "foobar"
   		end
   		it "should create a user" do
   			expect { click_button submit }.to change(User,:count).by(1)
@@ -88,6 +86,7 @@ describe "User Pages" do
         it { should have_success_message(user.name, 'Welcome') }
         it { should have_link('Sign out')}
       end
+
       describe "followed by signout" do
         before { click_button submit }
         let(:user) { User.find_by_email('user@example.com') }
@@ -100,11 +99,24 @@ describe "User Pages" do
       end
   	end
   end
+  describe "visiting create user and new user paths when already signed in" do
+    let(:user) { FactoryGirl.create(:user) }
+    before { sign_in(user) }
+
+    describe "it should redirect to root when create user is accessed" do
+      before { get new_user_path }
+      specify { response.should redirect_to(root_path) }
+    end
+
+    describe "it should redirect to root when new user path is accessed" do
+      before { post '/users' }
+      specify { response.should redirect_to(root_path) }
+    end
+  end
   describe "edit" do
     let(:user) { FactoryGirl.create(:user) }
     before do
-      visit signin_path
-      valid_signin(user)
+      sign_in(user)
       visit edit_user_path(user)
     end
 
