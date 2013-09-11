@@ -3,6 +3,7 @@ require 'spec_helper'
 describe "User Pages" do
 	subject { page }
   before(:all) { 39.times { FactoryGirl.create(:user) } }
+  
   after(:all) {User.delete_all }
 
   describe "index" do
@@ -165,4 +166,5 @@ describe "User Pages" do
     it { should have_content(user.microposts.count) }
     
   end
+
 end

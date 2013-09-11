@@ -14,4 +14,11 @@ describe ApplicationHelper do
 		end
 	end
 
+	describe "pluralize" do
+		if(Micropost.count > 0)
+			it { pluralize(2, "micropost").should == "2 microposts"}
+		else
+			it { pluralize(1, "micropost").should == "1 micropost"}
+		end
+	end
 end

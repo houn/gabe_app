@@ -1,0 +1,10 @@
+<script language="javascript" type="text/javascript">
+	$(".postContent").keyup(function(){
+    	el = $(this);
+    	if(el.val().length >= 140){
+      	  el.val( el.val().substr(0, 140) );
+    	} else {
+    	    $(".charNum").text((139-el.val().length) + ' ' + "characters left");
+  	  }
+	});
+</script>
