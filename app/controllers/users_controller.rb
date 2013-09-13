@@ -1,7 +1,9 @@
 class UsersController < ApplicationController
+ 
   before_filter :signed_in_user, only: [ :edit, :update]
   before_filter :correct_user, only: [:edit, :update]
   before_filter :admin_user, only: :destroy
+ 
   def new
     if !signed_in?
   	 @user = User.new
@@ -9,10 +11,12 @@ class UsersController < ApplicationController
       redirect_to root_path
     end
   end
+ 
   def show
   	@user = User.find(params[:id])
     @microposts = @user.microposts.paginate(page: params[:page])
   end
+ 
   def create
     if !signed_in?
     	@user = User.new(params[:user])
@@ -28,17 +32,21 @@ class UsersController < ApplicationController
       redirect_to root_path
     end
   end
+ 
   def index
     @users = User.paginate(page: params[:page])
   end
+ 
   def edit
   end
+ 
   def destroy
     if User.find(params[:id]).destroy
       flash[:success] = "User destroyed"
       redirect_to users_path
     end
   end
+ 
   def update
     if @user.update_attributes(params[:user])
       # Handle a successful update
@@ -47,6 +55,28 @@ class UsersController < ApplicationController
       redirect_to @user
     else
       render 'edit'
+    end
+  end
+
+  def following
+    if signed_in? 
+      @title = "Following"
+      @user = User.find(params[:id])
+      @users = @user.followed_users.paginate(page: params[:page])
+      render 'show_follow'
+    else
+      redirect_to signin_path
+    end
+  end
+
+  def followers
+    if signed_in?
+      @title = "Followers"
+      @user = User.find(params[:id])
+      @users = @user.followers.paginate(page: params[:page])
+      render 'show_follow'
+    else
+      redirect_to signin_path
     end
   end
 
